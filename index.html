@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Galaxy Pathology Lab Reports</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: white;
+    text-align: center;
+    padding: 40px;
+}
+
+.container {
+    max-width: 400px;
+    margin: auto;
+    background: #1e293b;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+h1 {
+    color: #38bdf8;
+}
+
+input {
+    width: 90%;
+    padding: 12px;
+    margin: 15px 0;
+    border-radius: 8px;
+    border: none;
+    font-size: 16px;
+}
+
+button {
+    background: #22c55e;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+}
+
+button:hover {
+    background: #16a34a;
+}
+
+a {
+    display: block;
+    margin-top: 20px;
+    font-size: 18px;
+    color: #38bdf8;
+    text-decoration: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Galaxy Pathology Lab</h1>
+    <p>Enter your Report ID</p>
+
+    <input type="text" id="reportId" placeholder="Enter Report ID">
+
+    <button onclick="getReport()">View Report</button>
+
+    <a id="reportLink" href="#" target="_blank"></a>
+</div>
+
+<script>
+function getReport() {
+    var id = document.getElementById("reportId").value.trim();
+
+    var reports = {
+        "101": "https://drive.google.com/file/d/XXXXX/view",
+        "102": "https://drive.google.com/file/d/YYYYY/view"
+    };
+
+    if(reports[id]) {
+        document.getElementById("reportLink").innerHTML = "👉 Click Here to Download Report";
+        document.getElementById("reportLink").href = reports[id];
+    } else {
+        document.getElementById("reportLink").innerHTML = "❌ Report Not Found";
+        document.getElementById("reportLink").href = "#";
+    }
+}
+</script>
+
+</body>
+</html>

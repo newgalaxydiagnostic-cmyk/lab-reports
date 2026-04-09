@@ -442,7 +442,9 @@ tr:hover td { background: rgba(255,255,255,.02); }
 
       <div class="portal-footer">
         <div>🌟 Galaxy Pathology Lab</div>
-        <a class="admin-link" onclick="showAdminLogin()">⚙ Admin</a>
+        <button onclick="showAdminLogin()" style="margin-top:14px;background:none;border:1px solid #334155;border-radius:8px;color:#64748b;font-family:Plus Jakarta Sans,sans-serif;font-size:13px;font-weight:600;padding:8px 20px;cursor:pointer;display:block;width:100%;">
+          ⚙️ Staff / Admin Login
+        </button>
       </div>
     </div>
   </div>
@@ -461,7 +463,7 @@ tr:hover td { background: rgba(255,255,255,.02); }
       <button class="login-btn" onclick="doLogin()">🔐 Login</button>
       <div class="err-msg" id="loginErr">❌ Wrong password!</div>
       <div style="text-align:center;margin-top:16px">
-        <a class="admin-link" style="opacity:.6" onclick="showView('portal')">← Back to Portal</a>
+        <button onclick="showView('portal')" style="background:none;border:none;color:#64748b;font-family:Plus Jakarta Sans,sans-serif;font-size:13px;cursor:pointer;margin-top:4px;text-decoration:underline;">← Back to Portal</button>
       </div>
     </div>
   </div>
@@ -528,16 +530,4 @@ tr:hover td { background: rgba(255,255,255,.02); }
           <label class="lbl">Google Drive / Any Link *</label>
           <div class="add-row">
             <div class="field">
-              <input class="fi" type="text" id="newLink" placeholder="https://drive.google.com/file/d/... (Patient ka PDF link)">
-            </div>
-            <button class="add-btn" onclick="addReport()">✅ Add Report</button>
-          </div>
-        </div>
-        <div class="flash" id="addFlash"></div>
-      </div>
-    </div>
-
-    <!-- Reports List -->
-    <div class="list-card">
-      <div class="list-head">
-      
+              <input class="fi" type

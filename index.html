@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -6,103 +7,226 @@
 <style>
 :root{--bg:#020617;--card:#0f172a;--accent:#22c55e;--muted:#94a3b8}
 *{box-sizing:border-box}
-body{margin:0;font-family:Inter,Arial;background:#020617;color:#e5e7eb}header{padding:16px;text-align:center} h1{margin:0;font-size:22px} p.sub{margin:5px 0 0;color:var(--muted);font-size:13px}
-
-.container{ min-height:calc(100vh - 90px); display:flex; align-items:center; justify-content:center; padding:10px }
-
-.card{ width:100%; max-width:480px; background:var(--card); border-radius:20px; padding:25px; box-shadow:0 20px 50px rgba(0,0,0,.6) }
-
-.input{width:100%;padding:15px;border-radius:12px;border:none;background:#020617;color:white;margin-top:14px;font-size:15px}
-
-.btn{width:100%;padding:15px;border-radius:14px;border:none;background:var(--accent);color:#022c22;font-weight:700;margin-top:16px;font-size:15px}
-
-.small{font-size:13px;color:var(--muted);margin-top:10px;text-align:center}
-
-.footer-admin{position:fixed;bottom:10px;left:0;right:0;text-align:center} .admin-toggle{padding:6px 12px;border-radius:20px;background:#020617;border:1px solid #1f2937;color:#94a3b8;font-size:12px}
-
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:16px} .modal.open{display:flex}
-
-textarea{width:100%;min-height:150px;border-radius:10px;background:#020617;color:white;padding:10px;margin-top:10px} </style>
-
+body{margin:0;font-family:Inter,Arial;background:#020617;color:#e5e7eb}
+header{padding:16px;text-align:center}
+h1{margin:0;font-size:22px}
+p.sub{margin:5px 0 0;color:var(--muted);font-size:13px}
+.container{min-height:calc(100vh - 90px);display:flex;align-items:center;justify-content:center;padding:10px}
+.card{width:100%;max-width:480px;background:var(--card);border-radius:20px;padding:25px;box-shadow:0 20px 50px rgba(0,0,0,.6)}
+.input{width:100%;padding:15px;border-radius:12px;border:1px solid #1f2937;background:#020617;color:white;margin-top:14px;font-size:15px;outline:none}
+.input:focus{border-color:var(--accent)}
+.btn{width:100%;padding:15px;border-radius:14px;border:none;background:var(--accent);color:#022c22;font-weight:700;margin-top:16px;font-size:15px;cursor:pointer}
+.btn:disabled{opacity:0.6;cursor:not-allowed}
+.btn-outline{background:transparent;border:1px solid var(--accent);color:var(--accent);margin-top:10px}
+.small{font-size:13px;margin-top:10px;text-align:center;color:var(--muted)}
+.error{color:#f87171 !important}
+.success{color:#22c55e !important}
+.footer-admin{position:fixed;bottom:10px;left:0;right:0;text-align:center}
+.admin-toggle{padding:8px 18px;border-radius:20px;background:#020617;border:1px solid #1f2937;color:#94a3b8;font-size:12px;cursor:pointer}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:flex-start;justify-content:center;padding:16px;z-index:100;overflow-y:auto}
+.modal.open{display:flex}
+.modal .card{margin:20px auto}
+textarea{width:100%;min-height:160px;border-radius:10px;background:#020617;color:white;padding:12px;margin-top:10px;border:1px solid #1f2937;font-size:13px;line-height:1.6}
+.close-btn{float:right;background:none;border:none;color:#94a3b8;font-size:22px;cursor:pointer}
+.loader{display:inline-block;width:14px;height:14px;border:2px solid #022c22;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.divider{border:none;border-top:1px solid #1f2937;margin:16px 0}
+</style>
 </head>
-<body><header>
-<h1>🌟 Galaxy Pathology Lab</h1>
-<p class="sub">Accurate Reports • Fast Service • Contact: 7007039552</p>
-</header><div class="container">
+<body>
+
+<header>
+  <h1>🌟 Galaxy Pathology Lab</h1>
+  <p class="sub">Accurate Reports • Fast Service • Contact: 7007039552</p>
+</header>
+
+<div class="container">
   <div class="card">
-    <h2 style="margin:0 0 10px;text-align:center">Download Your Report</h2>
-    <input class="input" type="text" id="patientId" placeholder="Enter Patient ID">
-    <button class="btn" onclick="getReport()">View / Download Report</button>
+    <h2 style="margin:0 0 5px;text-align:center">Download Your Report</h2>
+    <p style="text-align:center;color:var(--muted);font-size:13px;margin:0 0 5px">Patient ID daalo aur report download karo</p>
+    <input class="input" type="text" id="patientId" placeholder="Patient ID (e.g. GAL001)" onkeydown="if(event.key==='Enter')getReport()">
+    <button class="btn" id="viewBtn" onclick="getReport()">🔍 Report Dhundo & Download Karo</button>
     <p id="result" class="small"></p>
   </div>
-</div><div class="footer-admin">
-  <span class="admin-toggle" onclick="openLogin()">Admin</span>
-</div><div id="loginModal" class="modal">
+</div>
+
+<div class="footer-admin">
+  <span class="admin-toggle" onclick="openLogin()">🔐 Admin</span>
+</div>
+
+<!-- Login Modal -->
+<div id="loginModal" class="modal">
   <div class="card">
-    <h3>Admin Login</h3>
-    <input class="input" type="password" id="adminPass" placeholder="Enter Password">
+    <button class="close-btn" onclick="closeModal('loginModal')">✕</button>
+    <h3 style="margin-top:0">Admin Login</h3>
+    <input class="input" type="password" id="adminPass" placeholder="Password daalo" onkeydown="if(event.key==='Enter')loginAdmin()">
     <button class="btn" onclick="loginAdmin()">Login</button>
   </div>
-</div><div id="adminModal" class="modal">
+</div>
+
+<!-- Admin Panel Modal -->
+<div id="adminModal" class="modal">
   <div class="card">
-    <h3>Add Patient Report</h3>
-    <input class="input" type="text" id="pname" placeholder="Patient Name">
-    <input class="input" type="text" id="pidInput" placeholder="Enter Patient ID">
-    <input class="input" type="text" id="test" placeholder="Test Name">
-    <input class="input" type="text" id="date" placeholder="Date">
-    <input class="input" type="text" id="link" placeholder="Google Drive Link">
-    <button class="btn" onclick="saveData()">Save & Generate Message</button><textarea id="msg"></textarea>
-<button class="btn" onclick="copyMsg()">Copy Message</button>
-
+    <button class="close-btn" onclick="closeModal('adminModal')">✕</button>
+    <h3 style="margin-top:0">➕ Patient Report Add Karo</h3>
+    <input class="input" type="text" id="pname" placeholder="Patient ka Naam">
+    <input class="input" type="text" id="pidInput" placeholder="Patient ID (e.g. GAL001)">
+    <input class="input" type="text" id="test" placeholder="Test ka Naam (e.g. CBC, LFT)">
+    <input class="input" type="text" id="date" placeholder="Date (e.g. 10-Apr-2026)">
+    <input class="input" type="url" id="link" placeholder="Google Drive Link">
+    <button class="btn" id="saveBtn" onclick="saveData()">💾 Save Karo & Message Banao</button>
+    <p id="saveStatus" class="small"></p>
+    <hr class="divider">
+    <textarea id="msg" placeholder="Save karne ke baad yahan message aayega..."></textarea>
+    <button class="btn btn-outline" onclick="copyMsg()">📋 Message Copy Karo</button>
   </div>
-</div><script>
+</div>
+
+<script>
+const API     = 'https://sheetdb.io/api/v1/nw7expdyj9czh';
 const CONTACT = '7007039552';
-const SITE = 'https://newgalaxydiagnostic-cmyk.github.io/lab-reports/';
+const SITE    = 'https://newgalaxydiagnostic-cmyk.github.io/lab-reports/';
 
-let database = JSON.parse(localStorage.getItem('labData')) || {};
+function openLogin() {
+  document.getElementById('adminPass').value = '';
+  document.getElementById('loginModal').classList.add('open');
+}
 
-function openLogin(){document.getElementById('loginModal').classList.add('open')}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
 
-function loginAdmin(){
-  let pass = document.getElementById('adminPass').value;
-  if(pass==='azzu0822t'){
-    document.getElementById('loginModal').classList.remove('open');
+function loginAdmin() {
+  if (document.getElementById('adminPass').value === 'azzu0822t') {
+    closeModal('loginModal');
     document.getElementById('adminModal').classList.add('open');
-  }else{alert('Wrong Password')}
-}
-
-function saveData(){
-  let name=document.getElementById('pname').value;
-  let id=document.getElementById('pidInput').value;
-  let test=document.getElementById('test').value;
-  let date=document.getElementById('date').value;
-  let link=document.getElementById('link').value;
-
-  if(!id){alert('Enter Patient ID');return}
-
-  database[id]={name,test,date,link};
-  localStorage.setItem('labData',JSON.stringify(database));
-
-  let message=`Hello ${name} 👋\n\nYour Lab Report is Ready ✅\n\n🧪 Test: ${test}\n📅 Date: ${date}\n\n🔗 Check Your Report Here:\n${SITE}\n\n🆔 Your Patient ID: ${id}\n\n⚠️ Important:\nPlease consult your doctor for proper interpretation.\n\nThank you for trusting\n🌟 Galaxy Pathology Lab\n\nFor any queries:\n📞 ${CONTACT}`;
-
-  document.getElementById('msg').value=message;
-}
-
-function copyMsg(){
-  let ta=document.getElementById('msg');
-  ta.select();
-  document.execCommand('copy');
-  alert('Copied');
-}
-
-function getReport(){
-  let id=document.getElementById('patientId').value;
-  let data=database[id];
-  if(data){
-    window.open(data.link,'_blank');
-  }else{
-    document.getElementById('result').innerText='Report not found';
+  } else {
+    alert('❌ Wrong Password!');
   }
 }
-</script></body>
+
+async function saveData() {
+  const name = document.getElementById('pname').value.trim();
+  const id   = document.getElementById('pidInput').value.trim().toUpperCase();
+  const test = document.getElementById('test').value.trim();
+  const date = document.getElementById('date').value.trim();
+  const link = document.getElementById('link').value.trim();
+
+  if (!name) { alert('Patient ka naam daalo'); return; }
+  if (!id)   { alert('Patient ID daalo'); return; }
+  if (!link) { alert('Google Drive link daalo'); return; }
+
+  const saveBtn    = document.getElementById('saveBtn');
+  const saveStatus = document.getElementById('saveStatus');
+  saveBtn.disabled = true;
+  saveBtn.innerHTML = '<span class="loader"></span>Save ho raha hai...';
+  saveStatus.textContent = '';
+
+  try {
+    // Check karo ID already exist karti hai ya nahi
+    const checkRes  = await fetch(`${API}/search?PatientID=${encodeURIComponent(id)}`);
+    const checkData = await checkRes.json();
+
+    if (checkData && checkData.length > 0) {
+      // Update
+      await fetch(`${API}/PatientID/${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: { Name: name, Test: test, Date: date, Link: link } })
+      });
+      saveStatus.textContent = '✅ Record update ho gaya!';
+    } else {
+      // Naya insert
+      await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: [{ PatientID: id, Name: name, Test: test, Date: date, Link: link }] })
+      });
+      saveStatus.textContent = '✅ Naya record save ho gaya!';
+    }
+
+    saveStatus.className = 'small success';
+
+    document.getElementById('msg').value =
+`Hello ${name} 👋
+
+Aapki Lab Report Taiyar Hai ✅
+
+🧪 Test: ${test}
+📅 Date: ${date}
+
+🔗 Report Yahan Dekhein:
+${SITE}
+
+🆔 Aapka Patient ID: ${id}
+
+⚠️ Zaroori Baat:
+Report ki tafseer ke liye apne doctor se milein.
+
+Shukriya Galaxy Pathology Lab par bharosa karne ka
+🌟 Galaxy Pathology Lab
+
+Kisi bhi sawal ke liye:
+📞 ${CONTACT}`;
+
+    ['pname','pidInput','test','date','link'].forEach(f => document.getElementById(f).value = '');
+
+  } catch (err) {
+    saveStatus.textContent = '❌ Error — Internet check karo aur dobara try karo.';
+    saveStatus.className = 'small error';
+    console.error(err);
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = '💾 Save Karo & Message Banao';
+  }
+}
+
+function copyMsg() {
+  const ta = document.getElementById('msg');
+  ta.select();
+  document.execCommand('copy');
+  alert('✅ Message copy ho gaya! WhatsApp pe paste karo.');
+}
+
+async function getReport() {
+  const id      = document.getElementById('patientId').value.trim().toUpperCase();
+  const result  = document.getElementById('result');
+  const viewBtn = document.getElementById('viewBtn');
+
+  if (!id) {
+    result.textContent = '⚠️ Pehle Patient ID daalo.';
+    result.className = 'small error';
+    return;
+  }
+
+  viewBtn.disabled = true;
+  viewBtn.innerHTML = '<span class="loader"></span>Dhoondh raha hai...';
+  result.textContent = '';
+  result.className = 'small';
+
+  try {
+    const res  = await fetch(`${API}/search?PatientID=${encodeURIComponent(id)}`);
+    const data = await res.json();
+
+    if (data && data.length > 0) {
+      const p = data[0];
+      result.textContent = `✅ ${p.Name} ki report mil gayi! Khul rahi hai...`;
+      result.className = 'small success';
+      setTimeout(() => window.open(p.Link, '_blank'), 800);
+    } else {
+      result.textContent = '❌ Report nahi mili. Patient ID dobara check karein.';
+      result.className = 'small error';
+    }
+  } catch (err) {
+    result.textContent = '❌ Internet check karo aur dobara try karo.';
+    result.className = 'small error';
+    console.error(err);
+  } finally {
+    viewBtn.disabled = false;
+    viewBtn.innerHTML = '🔍 Report Dhundo & Download Karo';
+  }
+}
+</script>
+
+</body>
 </html>

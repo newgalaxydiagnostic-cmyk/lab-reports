@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Galaxy Pathology Lab</title>
+
 <style>
 :root{--bg:#020617;--card:#0f172a;--accent:#22c55e;--muted:#94a3b8}
 *{box-sizing:border-box}
@@ -33,6 +34,7 @@ textarea{width:100%;min-height:160px;border-radius:10px;background:#020617;color
 .divider{border:none;border-top:1px solid #1f2937;margin:16px 0}
 </style>
 </head>
+
 <body>
 
 <header>
@@ -43,9 +45,16 @@ textarea{width:100%;min-height:160px;border-radius:10px;background:#020617;color
 <div class="container">
   <div class="card">
     <h2 style="margin:0 0 5px;text-align:center">Download Your Report</h2>
-    <p style="text-align:center;color:var(--muted);font-size:13px;margin:0 0 5px">Patient ID daalo aur report download karo</p>
+    <p style="text-align:center;color:var(--muted);font-size:13px;margin:0 0 5px">
+      Enter Patient ID to download your report
+    </p>
+
     <input class="input" type="text" id="patientId" placeholder="Patient ID (e.g. GAL001)" onkeydown="if(event.key==='Enter')getReport()">
-    <button class="btn" id="viewBtn" onclick="getReport()">🔍 Report Dhundo & Download Karo</button>
+
+    <button class="btn" id="viewBtn" onclick="getReport()">
+      🔍 Find & Download Report
+    </button>
+
     <p id="result" class="small"></p>
   </div>
 </div>
@@ -59,26 +68,36 @@ textarea{width:100%;min-height:160px;border-radius:10px;background:#020617;color
   <div class="card">
     <button class="close-btn" onclick="closeModal('loginModal')">✕</button>
     <h3 style="margin-top:0">Admin Login</h3>
-    <input class="input" type="password" id="adminPass" placeholder="Password daalo" onkeydown="if(event.key==='Enter')loginAdmin()">
+    <input class="input" type="password" id="adminPass" placeholder="Enter Password" onkeydown="if(event.key==='Enter')loginAdmin()">
     <button class="btn" onclick="loginAdmin()">Login</button>
   </div>
 </div>
 
-<!-- Admin Panel Modal -->
+<!-- Admin Panel -->
 <div id="adminModal" class="modal">
   <div class="card">
     <button class="close-btn" onclick="closeModal('adminModal')">✕</button>
-    <h3 style="margin-top:0">➕ Patient Report Add Karo</h3>
-    <input class="input" type="text" id="pname" placeholder="Patient ka Naam">
+    <h3 style="margin-top:0">➕ Add Patient Report</h3>
+
+    <input class="input" type="text" id="pname" placeholder="Patient Name">
     <input class="input" type="text" id="pidInput" placeholder="Patient ID (e.g. GAL001)">
-    <input class="input" type="text" id="test" placeholder="Test ka Naam (e.g. CBC, LFT)">
+    <input class="input" type="text" id="test" placeholder="Test Name (e.g. CBC, LFT)">
     <input class="input" type="text" id="date" placeholder="Date (e.g. 10-Apr-2026)">
     <input class="input" type="url" id="link" placeholder="Google Drive Link">
-    <button class="btn" id="saveBtn" onclick="saveData()">💾 Save Karo & Message Banao</button>
+
+    <button class="btn" id="saveBtn" onclick="saveData()">
+      💾 Save & Generate Message
+    </button>
+
     <p id="saveStatus" class="small"></p>
+
     <hr class="divider">
-    <textarea id="msg" placeholder="Save karne ke baad yahan message aayega..."></textarea>
-    <button class="btn btn-outline" onclick="copyMsg()">📋 Message Copy Karo</button>
+
+    <textarea id="msg" placeholder="Message will appear here after saving..."></textarea>
+
+    <button class="btn btn-outline" onclick="copyMsg()">
+      📋 Copy Message
+    </button>
   </div>
 </div>
 
@@ -112,72 +131,68 @@ async function saveData() {
   const date = document.getElementById('date').value.trim();
   const link = document.getElementById('link').value.trim();
 
-  if (!name) { alert('Patient ka naam daalo'); return; }
-  if (!id)   { alert('Patient ID daalo'); return; }
-  if (!link) { alert('Google Drive link daalo'); return; }
+  if (!name) { alert('Enter patient name'); return; }
+  if (!id)   { alert('Enter patient ID'); return; }
+  if (!link) { alert('Enter Google Drive link'); return; }
 
   const saveBtn    = document.getElementById('saveBtn');
   const saveStatus = document.getElementById('saveStatus');
+
   saveBtn.disabled = true;
-  saveBtn.innerHTML = '<span class="loader"></span>Save ho raha hai...';
+  saveBtn.innerHTML = '<span class="loader"></span>Saving...';
   saveStatus.textContent = '';
 
   try {
-    // Check karo ID already exist karti hai ya nahi
     const checkRes  = await fetch(`${API}/search?PatientID=${encodeURIComponent(id)}`);
     const checkData = await checkRes.json();
 
     if (checkData && checkData.length > 0) {
-      // Update
       await fetch(`${API}/PatientID/${encodeURIComponent(id)}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: { Name: name, Test: test, Date: date, Link: link } })
       });
-      saveStatus.textContent = '✅ Record update ho gaya!';
+      saveStatus.textContent = '✅ Record updated successfully!';
     } else {
-      // Naya insert
       await fetch(API, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: [{ PatientID: id, Name: name, Test: test, Date: date, Link: link }] })
       });
-      saveStatus.textContent = '✅ Naya record save ho gaya!';
+      saveStatus.textContent = '✅ New record saved successfully!';
     }
 
     saveStatus.className = 'small success';
 
     document.getElementById('msg').value =
-`Hello ${name} 👋
+`Hello ${name},
 
-Aapki Lab Report Taiyar Hai ✅
+Your lab report is ready.
 
-🧪 Test: ${test}
-📅 Date: ${date}
+Test: ${test}
+Date: ${date}
 
-🔗 Report Yahan Dekhein:
+View your report here:
 ${SITE}
 
-🆔 Aapka Patient ID: ${id}
+Your Patient ID: ${id}
 
-⚠️ Zaroori Baat:
-Report ki tafseer ke liye apne doctor se milein.
+Important:
+Please consult your doctor for proper interpretation.
 
-Shukriya Galaxy Pathology Lab par bharosa karne ka
-🌟 Galaxy Pathology Lab
+Thank you for choosing Galaxy Pathology Lab.
 
-Kisi bhi sawal ke liye:
-📞 ${CONTACT}`;
+For queries:
+${CONTACT}`;
 
     ['pname','pidInput','test','date','link'].forEach(f => document.getElementById(f).value = '');
 
   } catch (err) {
-    saveStatus.textContent = '❌ Error — Internet check karo aur dobara try karo.';
+    saveStatus.textContent = '❌ Error — Check internet and try again.';
     saveStatus.className = 'small error';
-    console.error(err);
   } finally {
     saveBtn.disabled = false;
-    saveBtn.innerHTML = '💾 Save Karo & Message Banao';
+    saveBtn.innerHTML = '💾 Save & Generate Message';
   }
 }
 
@@ -185,45 +200,43 @@ function copyMsg() {
   const ta = document.getElementById('msg');
   ta.select();
   document.execCommand('copy');
-  alert('✅ Message copy ho gaya! WhatsApp pe paste karo.');
+  alert('✅ Message copied!');
 }
 
 async function getReport() {
-  const id      = document.getElementById('patientId').value.trim().toUpperCase();
-  const result  = document.getElementById('result');
+  const id = document.getElementById('patientId').value.trim().toUpperCase();
+  const result = document.getElementById('result');
   const viewBtn = document.getElementById('viewBtn');
 
   if (!id) {
-    result.textContent = '⚠️ Pehle Patient ID daalo.';
+    result.textContent = '⚠️ Please enter Patient ID.';
     result.className = 'small error';
     return;
   }
 
   viewBtn.disabled = true;
-  viewBtn.innerHTML = '<span class="loader"></span>Dhoondh raha hai...';
+  viewBtn.innerHTML = '<span class="loader"></span>Searching...';
   result.textContent = '';
-  result.className = 'small';
 
   try {
-    const res  = await fetch(`${API}/search?PatientID=${encodeURIComponent(id)}`);
+    const res = await fetch(`${API}/search?PatientID=${encodeURIComponent(id)}`);
     const data = await res.json();
 
     if (data && data.length > 0) {
       const p = data[0];
-      result.textContent = `✅ ${p.Name} ki report mil gayi! Khul rahi hai...`;
+      result.textContent = `✅ Report found for ${p.Name}. Opening...`;
       result.className = 'small success';
       setTimeout(() => window.open(p.Link, '_blank'), 800);
     } else {
-      result.textContent = '❌ Report nahi mili. Patient ID dobara check karein.';
+      result.textContent = '❌ Report not found. Check Patient ID.';
       result.className = 'small error';
     }
-  } catch (err) {
-    result.textContent = '❌ Internet check karo aur dobara try karo.';
+  } catch {
+    result.textContent = '❌ Internet error. Try again.';
     result.className = 'small error';
-    console.error(err);
   } finally {
     viewBtn.disabled = false;
-    viewBtn.innerHTML = '🔍 Report Dhundo & Download Karo';
+    viewBtn.innerHTML = '🔍 Find & Download Report';
   }
 }
 </script>

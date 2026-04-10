@@ -4,118 +4,119 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Galaxy Pathology Lab</title>
 <style>
-:root{--bg:#0b1220;--card:#111827;--accent:#22c55e;--muted:#94a3b8}
+:root{--bg:#020617;--card:#0f172a;--accent:#22c55e;--muted:#94a3b8}
 *{box-sizing:border-box}
-body{margin:0;font-family:Inter,system-ui,Arial;background:linear-gradient(180deg,#020617,#0b1220);color:#e5e7eb}
-header{padding:18px 14px;text-align:center;background:#020617;border-bottom:1px solid #0f172a}
-h1{margin:0;font-size:20px}
-p.sub{margin:6px 0 0;color:var(--muted);font-size:13px}
-.container{max-width:520px;margin:0 auto;padding:16px}
-.card{background:var(--card);border:1px solid #0f172a;border-radius:14px;padding:16px;box-shadow:0 10px 25px rgba(0,0,0,.25)}
-.input{width:100%;padding:12px 12px;border-radius:10px;border:1px solid #1f2937;background:#020617;color:#e5e7eb;margin-top:10px}
-.btn{width:100%;padding:12px;border-radius:12px;border:none;background:var(--accent);color:#022c22;font-weight:700;margin-top:12px}
-.btn.secondary{background:#1f2937;color:#e5e7eb}
-.small{font-size:12px;color:var(--muted)}
-.footer-admin{position:fixed;left:0;right:0;bottom:0;padding:10px;text-align:center}
-.admin-toggle{display:inline-block;padding:6px 10px;border-radius:999px;background:#020617;border:1px solid #1f2937;color:#94a3b8;font-size:12px}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:14px}
-.modal.open{display:flex}
-.modal-card{width:100%;max-width:520px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media (max-width:420px){.row{grid-template-columns:1fr}}
-textarea{width:100%;min-height:140px;border-radius:10px;border:1px solid #1f2937;background:#020617;color:#e5e7eb;padding:10px;margin-top:10px}
-.copy{display:flex;gap:10px}
-.copy button{flex:1}
-</style>
+body{margin:0;font-family:Inter,Arial;background:linear-gradient(180deg,#020617,#020617 60%,#020617);color:#e5e7eb}
+header{padding:18px;text-align:center}
+h1{margin:0;font-size:22px}
+p.sub{margin:6px 0 0;color:var(--muted);font-size:13px}.container{ min-height:80vh; display:flex; align-items:center; justify-content:center; padding:16px }
+
+.card{ width:100%; max-width:420px; background:var(--card); border-radius:18px; padding:20px; box-shadow:0 20px 40px rgba(0,0,0,.5) }
+
+.input{width:100%;padding:14px;border-radius:12px;border:none;background:#020617;color:white;margin-top:12px} .btn{width:100%;padding:14px;border-radius:14px;border:none;background:var(--accent);color:#022c22;font-weight:700;margin-top:14px} .small{font-size:12px;color:var(--muted);margin-top:10px}
+
+.footer-admin{position:fixed;bottom:10px;left:0;right:0;text-align:center} .admin-toggle{padding:6px 12px;border-radius:20px;background:#020617;border:1px solid #1f2937;color:#94a3b8;font-size:12px}
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:16px} .modal.open{display:flex}
+
+textarea{width:100%;min-height:150px;border-radius:10px;background:#020617;color:white;padding:10px;margin-top:10px}
+
+.id-list{margin-top:15px;padding:10px;background:#020617;border-radius:10px;font-size:12px} </style>
+
 </head>
-<body>
-<header>
+<body><header>
 <h1>🌟 Galaxy Pathology Lab</h1>
 <p class="sub">Accurate Reports • Fast Service • Contact: 7007039552</p>
 </header><div class="container">
   <div class="card">
-    <h3 style="margin:0 0 8px">Download Your Report</h3>
+    <h3 style="margin:0">Download Your Report</h3>
     <input class="input" type="text" id="patientId" placeholder="Enter Patient ID">
     <button class="btn" onclick="getReport()">View / Download Report</button>
-    <p id="result" class="small"></p>
+    <p id="result" class="small"></p><div class="id-list" id="idList"></div>
+
   </div>
-</div><!-- Admin toggle small at bottom --><div class="footer-admin">
+</div><div class="footer-admin">
   <span class="admin-toggle" onclick="openLogin()">Admin</span>
-</div><!-- Login Modal --><div id="loginModal" class="modal">
-  <div class="card modal-card">
-    <h3 style="margin-top:0">Admin Login</h3>
+</div><div id="loginModal" class="modal">
+  <div class="card">
+    <h3>Admin Login</h3>
     <input class="input" type="password" id="adminPass" placeholder="Enter Password">
     <button class="btn" onclick="loginAdmin()">Login</button>
-    <button class="btn secondary" onclick="closeLogin()">Close</button>
   </div>
-</div><!-- Admin Panel Modal --><div id="adminModal" class="modal">
-  <div class="card modal-card">
-    <h3 style="margin-top:0">Add Patient Report</h3>
-    <div class="row">
-      <input class="input" type="text" id="pname" placeholder="Patient Name">
-      <input class="input" type="text" id="pid" placeholder="Patient ID">
-    </div>
-    <div class="row">
-      <input class="input" type="text" id="test" placeholder="Test Name">
-      <input class="input" type="text" id="date" placeholder="Date (DD/MM/YYYY)">
-    </div>
-    <input class="input" type="text" id="link" placeholder="Google Drive Report Link">
-    <button class="btn" onclick="saveData()">Save & Generate Message</button><h4>Generated Message</h4>
-<textarea id="msg" placeholder="Auto message will appear here..."></textarea>
-<div class="copy">
-  <button class="btn" onclick="copyMsg()">Copy Message</button>
-  <button class="btn secondary" onclick="closeAdmin()">Close</button>
-</div>
+</div><div id="adminModal" class="modal">
+  <div class="card">
+    <h3>Add Patient Report</h3>
+    <input class="input" type="text" id="pname" placeholder="Patient Name">
+    <input class="input" type="text" id="pidInput" placeholder="Enter Patient ID (Custom)">
+    <input class="input" type="text" id="test" placeholder="Test Name">
+    <input class="input" type="text" id="date" placeholder="Date">
+    <input class="input" type="text" id="link" placeholder="Google Drive Link">
+    <button class="btn" onclick="saveData()">Save & Generate Message</button><textarea id="msg"></textarea>
+<button class="btn" onclick="copyMsg()">Copy Message</button>
 
   </div>
 </div><script>
 const CONTACT = '7007039552';
+const SITE = 'https://newgalaxydiagnostic-cmyk.github.io/lab-reports/';
+
 let database = JSON.parse(localStorage.getItem('labData')) || {};
 
+// Manual ID system (no random generation)
+function generateID(){
+  return document.getElementById('pidInput').value.trim();
+}
+
+function updateIDList(){
+  let list = '<b>Available Patient IDs:</b><br>';
+  for(let id in database){
+    list += id + '<br>';
+  }
+  document.getElementById('idList').innerHTML = list;
+}
+updateIDList();
+
 function openLogin(){document.getElementById('loginModal').classList.add('open')}
-function closeLogin(){document.getElementById('loginModal').classList.remove('open')}
-function openAdmin(){document.getElementById('adminModal').classList.add('open')}
-function closeAdmin(){document.getElementById('adminModal').classList.remove('open')}
 
 function loginAdmin(){
-  const pass = document.getElementById('adminPass').value;
-  if(pass === 'azzu0822t'){
-    closeLogin();
-    openAdmin();
+  let pass = document.getElementById('adminPass').value;
+  if(pass==='azzu0822t'){
+    document.getElementById('loginModal').classList.remove('open');
+    document.getElementById('adminModal').classList.add('open');
   }else{alert('Wrong Password')}
 }
 
 function saveData(){
-  const name = document.getElementById('pname').value.trim();
-  const id = document.getElementById('pid').value.trim();
-  const test = document.getElementById('test').value.trim();
-  const date = document.getElementById('date').value.trim();
-  const link = document.getElementById('link').value.trim();
-  if(!id || !link){alert('Patient ID and Report Link required');return}
-  database[id] = {name,test,date,link};
-  localStorage.setItem('labData', JSON.stringify(database));
+  let name=document.getElementById('pname').value;
+  let test=document.getElementById('test').value;
+  let date=document.getElementById('date').value;
+  let link=document.getElementById('link').value;
 
-  const message = `Hello ${name || 'Patient'} 👋\n\nYour Lab Report is Ready ✅\n\n🧪 Test: ${test || '-'}\n📅 Date: ${date || '-'}\n\n🔗 View & Download Report:\n${link}\n\n⚠️ Important:\nPlease consult your doctor for proper interpretation.\n\nThank you for trusting\n🌟 Galaxy Pathology Lab\n\nFor any queries:\n📞 ${CONTACT}`;
+  let id = generateID();
 
-  document.getElementById('msg').value = message;
-  alert('Saved & Message Generated');
+  database[id]={name,test,date,link};
+  localStorage.setItem('labData',JSON.stringify(database));
+
+  updateIDList();
+
+  let message=`Hello ${name} 👋\n\nYour Lab Report is Ready ✅\n\n🧪 Test: ${test}\n📅 Date: ${date}\n\n🔗 Check Your Report Here:\n${SITE}\n\n🆔 Your Patient ID: ${id}\n\n⚠️ Important:\nPlease consult your doctor for proper interpretation.\n\nThank you for trusting\n🌟 Galaxy Pathology Lab\n\nFor any queries:\n📞 ${CONTACT}`;
+
+  document.getElementById('msg').value=message;
 }
 
 function copyMsg(){
-  const ta = document.getElementById('msg');
+  let ta=document.getElementById('msg');
   ta.select();
-  ta.setSelectionRange(0, 99999);
   document.execCommand('copy');
-  alert('Message Copied');
+  alert('Copied');
 }
 
 function getReport(){
-  const id = document.getElementById('patientId').value.trim();
-  const data = database[id];
+  let id=document.getElementById('patientId').value;
+  let data=database[id];
   if(data){
-    window.open(data.link, '_blank');
+    window.open(data.link,'_blank');
   }else{
-    document.getElementById('result').innerText = 'Report not found. Please check Patient ID.';
+    document.getElementById('result').innerText='Report not found';
   }
 }
 </script></body>

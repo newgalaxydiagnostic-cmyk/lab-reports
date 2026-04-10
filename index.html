@@ -6,22 +6,23 @@
 <style>
 :root{--bg:#020617;--card:#0f172a;--accent:#22c55e;--muted:#94a3b8}
 *{box-sizing:border-box}
-body{margin:0;font-family:Inter,Arial;background:linear-gradient(180deg,#020617,#020617 60%,#020617);color:#e5e7eb}
-header{padding:18px;text-align:center}
-h1{margin:0;font-size:22px}
-p.sub{margin:6px 0 0;color:var(--muted);font-size:13px}.container{ min-height:80vh; display:flex; align-items:center; justify-content:center; padding:16px }
+body{margin:0;font-family:Inter,Arial;background:#020617;color:#e5e7eb}header{padding:16px;text-align:center} h1{margin:0;font-size:22px} p.sub{margin:5px 0 0;color:var(--muted);font-size:13px}
 
-.card{ width:100%; max-width:420px; background:var(--card); border-radius:18px; padding:20px; box-shadow:0 20px 40px rgba(0,0,0,.5) }
+.container{ min-height:calc(100vh - 90px); display:flex; align-items:center; justify-content:center; padding:10px }
 
-.input{width:100%;padding:14px;border-radius:12px;border:none;background:#020617;color:white;margin-top:12px} .btn{width:100%;padding:14px;border-radius:14px;border:none;background:var(--accent);color:#022c22;font-weight:700;margin-top:14px} .small{font-size:12px;color:var(--muted);margin-top:10px}
+.card{ width:100%; max-width:480px; background:var(--card); border-radius:20px; padding:25px; box-shadow:0 20px 50px rgba(0,0,0,.6) }
+
+.input{width:100%;padding:15px;border-radius:12px;border:none;background:#020617;color:white;margin-top:14px;font-size:15px}
+
+.btn{width:100%;padding:15px;border-radius:14px;border:none;background:var(--accent);color:#022c22;font-weight:700;margin-top:16px;font-size:15px}
+
+.small{font-size:13px;color:var(--muted);margin-top:10px;text-align:center}
 
 .footer-admin{position:fixed;bottom:10px;left:0;right:0;text-align:center} .admin-toggle{padding:6px 12px;border-radius:20px;background:#020617;border:1px solid #1f2937;color:#94a3b8;font-size:12px}
 
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:16px} .modal.open{display:flex}
 
-textarea{width:100%;min-height:150px;border-radius:10px;background:#020617;color:white;padding:10px;margin-top:10px}
-
-.id-list{margin-top:15px;padding:10px;background:#020617;border-radius:10px;font-size:12px} </style>
+textarea{width:100%;min-height:150px;border-radius:10px;background:#020617;color:white;padding:10px;margin-top:10px} </style>
 
 </head>
 <body><header>
@@ -29,11 +30,10 @@ textarea{width:100%;min-height:150px;border-radius:10px;background:#020617;color
 <p class="sub">Accurate Reports • Fast Service • Contact: 7007039552</p>
 </header><div class="container">
   <div class="card">
-    <h3 style="margin:0">Download Your Report</h3>
+    <h2 style="margin:0 0 10px;text-align:center">Download Your Report</h2>
     <input class="input" type="text" id="patientId" placeholder="Enter Patient ID">
     <button class="btn" onclick="getReport()">View / Download Report</button>
-    <p id="result" class="small"></p><div class="id-list" id="idList"></div>
-
+    <p id="result" class="small"></p>
   </div>
 </div><div class="footer-admin">
   <span class="admin-toggle" onclick="openLogin()">Admin</span>
@@ -47,7 +47,7 @@ textarea{width:100%;min-height:150px;border-radius:10px;background:#020617;color
   <div class="card">
     <h3>Add Patient Report</h3>
     <input class="input" type="text" id="pname" placeholder="Patient Name">
-    <input class="input" type="text" id="pidInput" placeholder="Enter Patient ID (Custom)">
+    <input class="input" type="text" id="pidInput" placeholder="Enter Patient ID">
     <input class="input" type="text" id="test" placeholder="Test Name">
     <input class="input" type="text" id="date" placeholder="Date">
     <input class="input" type="text" id="link" placeholder="Google Drive Link">
@@ -61,20 +61,6 @@ const SITE = 'https://newgalaxydiagnostic-cmyk.github.io/lab-reports/';
 
 let database = JSON.parse(localStorage.getItem('labData')) || {};
 
-// Manual ID system (no random generation)
-function generateID(){
-  return document.getElementById('pidInput').value.trim();
-}
-
-function updateIDList(){
-  let list = '<b>Available Patient IDs:</b><br>';
-  for(let id in database){
-    list += id + '<br>';
-  }
-  document.getElementById('idList').innerHTML = list;
-}
-updateIDList();
-
 function openLogin(){document.getElementById('loginModal').classList.add('open')}
 
 function loginAdmin(){
@@ -87,16 +73,15 @@ function loginAdmin(){
 
 function saveData(){
   let name=document.getElementById('pname').value;
+  let id=document.getElementById('pidInput').value;
   let test=document.getElementById('test').value;
   let date=document.getElementById('date').value;
   let link=document.getElementById('link').value;
 
-  let id = generateID();
+  if(!id){alert('Enter Patient ID');return}
 
   database[id]={name,test,date,link};
   localStorage.setItem('labData',JSON.stringify(database));
-
-  updateIDList();
 
   let message=`Hello ${name} 👋\n\nYour Lab Report is Ready ✅\n\n🧪 Test: ${test}\n📅 Date: ${date}\n\n🔗 Check Your Report Here:\n${SITE}\n\n🆔 Your Patient ID: ${id}\n\n⚠️ Important:\nPlease consult your doctor for proper interpretation.\n\nThank you for trusting\n🌟 Galaxy Pathology Lab\n\nFor any queries:\n📞 ${CONTACT}`;
 
